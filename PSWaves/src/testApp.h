@@ -5,6 +5,8 @@
 #include "ofxGameCamera.h"
 #include "ofxOceanRenderer.h"
 
+#include "ofxPSScreen.h"
+
 class testApp : public ofBaseApp{
 
   public:
@@ -29,7 +31,10 @@ class testApp : public ofBaseApp{
 	ofxGameCamera cam;
 	ofVideoGrabber vid;
 	
-	
+	void splitAndDraw();
+	void saveScreens();
+	void loadScreens();
+
     int oceanTileSizeX;
     int oceanTileSizeY;
 	float windSpeed;
@@ -37,4 +42,15 @@ class testApp : public ofBaseApp{
 	float choppyScale;
 	float waveSpeed;
 	
+	//edit mode stuff
+	vector<ofxPSScreen*> screens;
+	bool editingHandles;
+	bool editingTextureRatios;
+		
+	ofxPSScreen* currentScreen;
+	int currentPointDragIndex;
+	ofVec2f dragOffset;
+	
+	void gaussian_elimination(float *input, int n);
+	void findHomography(ofVec2f src[4], ofVec2f dst[4], float homography[16]);
 };
