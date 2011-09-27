@@ -38,6 +38,7 @@ void testApp::setup(){
 	
 	editingHandles = false;
 	editingTextureRatios = false;	
+	draggingCorner = false;
 	currentScreen = NULL;
 	loadScreens();
 }
@@ -61,10 +62,10 @@ void testApp::draw(){
 	ofClear(0, 0, 0, 255);
 		
 	cam.begin(ofRectangle(0, 0, fbo.getWidth(), fbo.getHeight()));
-	
 	ofSetColor(255, 255, 255, 255);
 	renderer->drawWireframe();
 	cam.end();
+	
 	fbo.end();
 	
 	splitAndDraw();
@@ -148,12 +149,53 @@ void testApp::splitAndDraw(){
 }
 
 void testApp::saveScreens(){
+	
+	ofxXmlSettings savedsettings;
+	savedsettings.addTag("screens");
+	savedsettings.pushTag("screens");
+	
+	for(int i = 0; i < 6; i++){
+		ofxPSScreen* screen = screens[i];
+		savedsettings.addTag("screen");
+		savedsettings.pushTag("screen", i);
+		savedsettings.addTag("dest");
+		savedsettings.pushTag("dest");
+		for(int p = 0; p < 4; p++){
+			savedsettings.addValue("x", screen->dest[p].x);
+			savedsettings.addValue("y", screen->dest[p].y);
+		}
+		savedsettings.popTag();//dest
+		savedsettings.popTag();//screen;
+	}
+	
+	savedsettings.popTag();//screens
+	savedsettings.saveFile("screens.xml");
 }
 
 void testApp::loadScreens(){
 	ofxXmlSettings savedsettings;
 	if(savedsettings.loadFile("screens.xml")){
 		//parse em out
+		savedsettings.pushTag("screens");
+		for(int i = 0; i < 6; i++){
+			savedsettings.pushTag("screen", i);
+			ofxPSScreen* s = new ofxPSScreen();
+			
+			s->bottomCrop = 0;
+			s->topCrop = 0;
+			s->textureStartPercent = i/6.0;
+			s->textureStopPercent = (i+1)/6.0;
+			
+			savedsettings.pushTag("dest");
+			for(int p = 0; p < 4; p++){
+				s->dest[p] = ofVec2f(savedsettings.getValue("x", 0.0, p),
+									 savedsettings.getValue("y", 0.0, p));
+			}
+			savedsettings.popTag();//dest
+			savedsettings.popTag();//screen
+			
+			screens.push_back( s );
+		}
 	}
 	else{
 		//make new ones
@@ -163,13 +205,21 @@ void testApp::loadScreens(){
 			s->topCrop = 0;
 			s->textureStartPercent = i/6.0;
 			s->textureStopPercent = (i+1)/6.0;
-			s->source[0] = s->dest[0] = ofPoint(s->textureStartPercent*fbo.getWidth(), 0);
-			s->source[1] = s->dest[1] = ofPoint(s->textureStopPercent*fbo.getWidth(), 0);
-			s->source[2] = s->dest[2] = ofPoint(s->textureStopPercent*fbo.getWidth(), fbo.getHeight());
-			s->source[3] = s->dest[3] = ofPoint(s->textureStartPercent*fbo.getWidth(), fbo.getHeight());
+			s->dest[0] = ofVec2f(s->textureStartPercent*fbo.getWidth(), 0);
+			s->dest[1] = ofVec2f(s->textureStopPercent*fbo.getWidth(), 0);
+			s->dest[2] = ofVec2f(s->textureStopPercent*fbo.getWidth(), fbo.getHeight());
+			s->dest[3] = ofVec2f(s->textureStartPercent*fbo.getWidth(), fbo.getHeight());
 			screens.push_back( s );
 		}
 	}
+	
+	for(int i = 0; i < 6; i++){
+		ofxPSScreen* s = screens[i];
+		s->source[0] = ofPoint(i/6.0*fbo.getWidth(), 0);
+		s->source[1] = ofPoint((i+1)/6.0*fbo.getWidth(), 0);
+		s->source[2] = ofPoint((i+1)/6.0*fbo.getWidth(), fbo.getHeight());
+		s->source[3] = ofPoint(i/6.0*fbo.getWidth(), fbo.getHeight());
+	}		
 }
 
 //--------------------------------------------------------------
@@ -192,7 +242,7 @@ void testApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
 	if(editingHandles && currentScreen != NULL){
-		currentScreen->dest[currentPointDragIndex] = ofVec2f(x,y) - dragOffset;
+		currentScreen->dest[currentPointDragIndex] = ofVec2f(x,y) + dragOffset;
 	}
 }
 
@@ -206,6 +256,7 @@ void testApp::mousePressed(int x, int y, int button){
 					currentScreen = screens[i];
 					currentPointDragIndex = p;
 					dragOffset = screens[i]->dest[p] - mousePoint;
+					draggingCorner = true;
 					break;
 				}
 			}
@@ -215,7 +266,12 @@ void testApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
-
+	if(editingHandles){
+		currentPointDragIndex = -1;
+		draggingCorner = false;
+		saveScreens();
+	}
+	
 }
 
 //--------------------------------------------------------------

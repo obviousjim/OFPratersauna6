@@ -47,6 +47,7 @@ class testApp : public ofBaseApp{
 	bool editingHandles;
 	bool editingTextureRatios;
 		
+	bool draggingCorner;
 	ofxPSScreen* currentScreen;
 	int currentPointDragIndex;
 	ofVec2f dragOffset;
