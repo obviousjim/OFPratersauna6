@@ -364,23 +364,31 @@ void testApp::loadScreens(){
 
 void testApp::handleOSC(){
 	while(oscreceiver.hasWaitingMessages()){
+
 		ofxOscMessage m;
 		oscreceiver.getNextMessage(&m);
-
+		
+		cout << "RECEIVED OSC " << m.getAddress() << " arg? " << m.getArgAsInt32(0) << endl;
+		
 		if(m.getAddress() == "/camera1"){
 			cam.cameraPositionFile = "camera1.xml";
+			cam.loadCameraPosition();
 		}
 		if(m.getAddress() == "/camera2"){
 			cam.cameraPositionFile = "camera2.xml";
+			cam.loadCameraPosition();
 		}
 		if(m.getAddress() == "/camera3"){
 			cam.cameraPositionFile = "camera3.xml";
+			cam.loadCameraPosition();
 		}
 		if(m.getAddress() == "/camera4"){
 			cam.cameraPositionFile = "camera4.xml";
+			cam.loadCameraPosition();
 		}
 		if(m.getAddress() == "/camera5"){
 			cam.cameraPositionFile = "camera5.xml";
+			cam.loadCameraPosition();
 		}
 
 		if(m.getAddress() == "/mood1"){
@@ -401,6 +409,10 @@ void testApp::handleOSC(){
 		}
 		if(m.getAddress() == "/wavechoppy"){
 			targetChoppy = m.getArgAsFloat(0);
+		}
+		
+		if(m.getAddress() == "/fftscale"){
+			contours->fftScale = m.getArgAsFloat(0);
 		}
 	}
 }
@@ -461,15 +473,14 @@ void testApp::keyPressed(int key){
 		cam.saveCameraPosition();
 	}
 	else if(key == '2'){
-
 		cam.cameraPositionFile = "camera2.xml";
 		cam.saveCameraPosition();
 	}
-	else if(key == '4'){
+	else if(key == '3'){
 		cam.cameraPositionFile = "camera3.xml";
 		cam.saveCameraPosition();
 	}
-	else if(key == '5'){
+	else if(key == '4'){
 		cam.cameraPositionFile = "camera4.xml";
 		cam.saveCameraPosition();
 	}
