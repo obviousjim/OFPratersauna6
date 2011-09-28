@@ -58,9 +58,9 @@ void ofxOceanContourGenerator::generate(){
 	switchTime = ofGetElapsedTimef();
 	
 	bounds.push_back(ofPoint(0,0));
-	bounds.push_back(ofPoint(tileSize,0));
-	bounds.push_back(ofPoint(tileSize,tileSize));
-	bounds.push_back(ofPoint(0,tileSize));
+	bounds.push_back(ofPoint(tileSize.x,0));
+	bounds.push_back(ofPoint(tileSize.x,tileSize.y));
+	bounds.push_back(ofPoint(0,tileSize.y));
 					 
 }
 
@@ -90,8 +90,8 @@ void ofxOceanContourGenerator::update(){
 				break;
 			}
 			else{
-				contour->startpos = contour->startpos - contour->velocity.normalized() * tileSize;
-				contour->endpos = contour->endpos - contour->velocity.normalized() * tileSize;
+				contour->startpos = contour->startpos - contour->velocity.normalized() * tileSize.x;
+				contour->endpos = contour->endpos - contour->velocity.normalized() * tileSize.x;
 				if(ofRandomuf() > .5){
 					assignMood(contour);
 				}
@@ -103,10 +103,10 @@ void ofxOceanContourGenerator::update(){
 	if(currentMood->targetDensity > contours.size() && ofRandomuf() > .9){
 		ofxOceanContour* c = new ofxOceanContour();
 		c->startpos = ofVec2f(0, 0);
-		c->endpos = ofVec2f(0, tileSize);
+		c->endpos = ofVec2f(0, tileSize.y);
 		
 		assignMood(c);
-		c->sampleStep = 4;
+		c->sampleStep = 7;
 		
 		c->ocean = ocean;
 		c->contourNumber = contours.size();

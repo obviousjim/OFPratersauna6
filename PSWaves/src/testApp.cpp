@@ -61,7 +61,7 @@ void testApp::setup(){
 void testApp::createMoods(){
 	contours = new ofxOceanContourGenerator();
 	contours->ocean = ocean;
-	contours->tileSize = 1000;
+	contours->tileSize = ofVec2f(500, 2000);
 	contours->step = 4;
 	contours->fft = fft;
 
@@ -71,7 +71,7 @@ void testApp::createMoods(){
 	 m->thicknessB = .2;
 	 m->velocityA = ofVec2f(1.0, 0);
 	 m->velocityB = ofVec2f(.1, 0);
-	 m->targetDensity = 400;
+	 m->targetDensity = 200;
 	 m->baseColor = ofFloatColor(1.0,1.0,1.0);
 	 m->accentColor = ofFloatColor(1.0, .35, 0);
 	 moods.push_back( m );
@@ -84,7 +84,7 @@ void testApp::createMoods(){
 	m->thicknessB = .4;
 	m->velocityA = ofVec2f(1.0, 0);
 	m->velocityB = ofVec2f(.3, 0);
-	m->targetDensity = 100;
+	m->targetDensity = 50;
 	m->baseColor = ofFloatColor(0.0,114/255.0,182/255);
 	m->accentColor = ofFloatColor(1.0,1.0,1.0);
 	moods.push_back( m );
@@ -96,7 +96,7 @@ void testApp::createMoods(){
 	m->thicknessB = .05;
 	m->velocityA = ofVec2f(2.0, 0);
 	m->velocityB = ofVec2f(.5, 0);
-	m->targetDensity = 100;
+	m->targetDensity = 50;
 	m->baseColor = ofFloatColor(.75, .75, .75);
 	m->accentColor = ofFloatColor(.8,.0, 1.0);
 	moods.push_back( m );
@@ -107,7 +107,7 @@ void testApp::createMoods(){
 	m->thicknessB = .05;
 	m->velocityA = ofVec2f(2.0, 0);
 	m->velocityB = ofVec2f(.5, 0);
-	m->targetDensity = 300;
+	m->targetDensity = 150;
 	m->baseColor = ofFloatColor(1.0,1.0,0.0);
 	m->accentColor = ofFloatColor(1.0, .35, 0);
 

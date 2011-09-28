@@ -27,7 +27,7 @@ typedef struct
 
 class ofxOceanContourGenerator {
   public:
-	float tileSize;
+	ofVec2f tileSize;
 	float step;
 	
 	void generate();
