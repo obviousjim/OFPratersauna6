@@ -2,42 +2,42 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-	
+
 	ofSetFrameRate(30);
 	ofSetVerticalSync(true);
 	ofEnableSmoothing();
     ofEnableAlphaBlending();
-	
+	ofBackground(0);
 	fbo.allocate(6144, 768, GL_RGB, 4);
-	
+
 	ofSetWindowPosition(0, 0);
 	ofSetWindowShape(fbo.getWidth(), fbo.getHeight());
-	
+
 	cam.setScale(1,-1,1);
 	cam.speed = 1.5;
 	cam.setFov(30);
-	
+
 	cam.useArrowKeys = false;
 	cam.usemouse = true;
 	cam.autosavePosition = false;
 	cam.cameraPositionFile = "camera1.xml";
 	cam.loadCameraPosition();
-	
+
 	oceanTileSizeX = 200;
 	oceanTileSizeY = 200;
-	
+
 	ocean = new ofxOcean();
     ocean->size = ofVec3f(oceanTileSizeX, 1.0, oceanTileSizeY);
     ocean->windSpeed = 32;
 
     //all other ocean params are set per frame
     ocean->setup();
-	
+
 	renderer = new ofxOceanRenderer();
 	renderer->shaderLocation = "";
 	renderer->setup(ocean, 9, 9);
-	
-	
+
+
 	drawFFT = false;
 	fft = new ofxFFTLive();
     fft->setMirrorData( false );
@@ -45,13 +45,13 @@ void testApp::setup(){
     fft->setup();
 
 	createMoods();
-	
+
 	scaleToView = false;
 	editingHandles = false;
-	editingTextureRatios = false;	
+	editingTextureRatios = false;
 	draggingCorner = false;
 	currentScreen = NULL;
-	
+
 	loadScreens();
 }
 
@@ -85,9 +85,9 @@ void testApp::createMoods(){
 	 m->baseColor = ofFloatColor(1.0,1.0,1.0);
 	 m->accentColor = ofFloatColor(1.0, .35, 0);
 	 moods.push_back( m );
-	
+
 	contours->currentMood = m;
-	
+
 	contours->generate();
 
 }
@@ -96,13 +96,13 @@ void testApp::createMoods(){
 void testApp::update(){
     ocean->waveScale = 3;
     ocean->choppyScale = 6.0;
-	
+
     ocean->waveSpeed = 5;
 	ocean->setFrameNum(ofGetFrameNum());
     ocean->update();
-	
+
 	renderer->update();
-	
+
 	fft->update();
 
 	contours->update();
@@ -110,18 +110,18 @@ void testApp::update(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
-	
+
 	fbo.begin();
 	ofClear(0, 0, 0, 255);
-		
+
 	cam.begin(ofRectangle(0, 0, fbo.getWidth(), fbo.getHeight()));
 	ofSetColor(255, 255, 255, 255);
-	
+
 //	renderer->drawWireframe();
 	contours->draw();
-	
+
 	cam.end();
-	
+
 	//draw grid if we're editing
 	if(editingHandles){
 		ofPushStyle();
@@ -129,23 +129,23 @@ void testApp::draw(){
 		for(int i = 0; i < fbo.getWidth(); i += 100){
 			ofLine(i, 0, i, fbo.getHeight());
 		}
-		
+
 		for(int i = 0; i < fbo.getHeight(); i += 100){
-			ofLine(0, i, fbo.getWidth(), i);		
+			ofLine(0, i, fbo.getWidth(), i);
 		}
-		
+
 		ofSetColor(255, 255, 0, 50);
 		for(int i = 0; i < fbo.getWidth(); i += 25){
 			ofLine(i, 0, i, fbo.getHeight());
 		}
-		
+
 		for(int i = 0; i < fbo.getHeight(); i += 25){
-			ofLine(0, i, fbo.getWidth(), i);		
+			ofLine(0, i, fbo.getWidth(), i);
 		}
-		
+
 		ofPopStyle();
 	}
-	
+
 	fbo.end();
 	if(scaleToView){
 		//calculate how to draw onto main screen
@@ -156,12 +156,12 @@ void testApp::draw(){
 	else{
 		splitAndDraw();
 	}
-	
+
 	if(editingHandles){
 		ofPushStyle();
 		for(int i = 0; i < screens.size(); i++){
 			ofxPSScreen* s = screens[i];
-			
+
 			//draw handles
 			for(int p = 0; p < 4; p++){
 				if(s == currentScreen && p == currentPointDragIndex){
@@ -175,7 +175,7 @@ void testApp::draw(){
 				ofSetColor(255, 255, 0);
 				ofCircle(s->dest[p], 3);
 			}
-			
+
 			ofNoFill();
 			//draw outline
 			if(s == currentScreen){
@@ -188,10 +188,10 @@ void testApp::draw(){
 			ofBeginShape();
 			for(int p = 0; p < 4; p++){
 				ofVertex(s->dest[p].x,s->dest[p].y);
-			}	
+			}
 			ofEndShape(true);
 		}
-		
+
 		ofSetLineWidth(10);
 		for(int i = 0; i < fencePosts.size(); i++){
 			if(fencepostSelected && selectedFencepostIndex == i){
@@ -203,7 +203,7 @@ void testApp::draw(){
 			ofLine(fencePosts[i], 0, fencePosts[i], fbo.getHeight());
 		}
 		ofSetLineWidth(1);
-		
+
 		ofPopStyle();
 	}
 	if(drawFFT){
@@ -214,22 +214,22 @@ void testApp::draw(){
 }
 
 void testApp::splitAndDraw(){
-	
+
 	fbo.getTextureReference().bind();
-	
+
 	for(int i = 0; i < screens.size(); i++){
 		ofPushMatrix();
-		
+
 		ofxPSScreen* screen = screens[i];
 		findHomography(screen->source, screen->dest,screen->correctionMatrix);
-		
+
 		glMultMatrixf(screen->correctionMatrix);
-		
+
 		glBegin(GL_QUADS);
-		
+
 		glTexCoord2f(fencePosts[screen->leftPostIndex], 0);
 		glVertex2f(screen->source[0].x, screen->source[0].y);
-		
+
 		glTexCoord2f(fencePosts[screen->rightPostIndex], 0);
 		glVertex2f(screen->source[1].x, screen->source[1].y);
 
@@ -238,21 +238,21 @@ void testApp::splitAndDraw(){
 
 		glTexCoord2f(fencePosts[screen->leftPostIndex], fbo.getHeight());
 		glVertex2f(screen->source[3].x, screen->source[3].y);
-		
+
 		glEnd();
-		
+
 		ofPopMatrix();
 	}
-	
+
 	fbo.getTextureReference().unbind();
 }
 
 void testApp::saveScreens(){
-	
+
 	ofxXmlSettings savedsettings;
 	savedsettings.addTag("screens");
 	savedsettings.pushTag("screens");
-	
+
 	for(int i = 0; i < 6; i++){
 		ofxPSScreen* screen = screens[i];
 		savedsettings.addTag("screen");
@@ -274,7 +274,7 @@ void testApp::saveScreens(){
 		savedsettings.addValue("post", fencePosts[i]);
 	}
 	savedsettings.popTag();//posts;
-	
+
 	savedsettings.saveFile("screens.xml");
 }
 
@@ -286,7 +286,7 @@ void testApp::loadScreens(){
 		for(int i = 0; i < 6; i++){
 			savedsettings.pushTag("screen", i);
 			ofxPSScreen* s = new ofxPSScreen();
-						
+
 			savedsettings.pushTag("dest");
 			for(int p = 0; p < 4; p++){
 				s->dest[p] = ofVec2f(savedsettings.getValue("x", 0.0, p),
@@ -294,11 +294,11 @@ void testApp::loadScreens(){
 			}
 			savedsettings.popTag();//dest
 			savedsettings.popTag();//screen
-			
+
 			screens.push_back( s );
 		}
 		savedsettings.popTag(); //screens
-		
+
 		savedsettings.pushTag("posts");
 		for(int i = 0; i < 7; i++){
 			fencePosts.push_back(savedsettings.getValue("post", .0, i));
@@ -309,7 +309,7 @@ void testApp::loadScreens(){
 		for(int i = 0; i < 7; i++){
 			fencePosts.push_back(i/6.0 * fbo.getWidth());
 		}
-		
+
 		//make new ones
 		for(int i = 0; i < 6; i++){
 			ofxPSScreen* s = new ofxPSScreen();
@@ -322,7 +322,7 @@ void testApp::loadScreens(){
 			screens.push_back( s );
 		}
 	}
-	
+
 	for(int i = 0; i < 6; i++){
 		ofxPSScreen* s = screens[i];
 		s->source[0] = ofPoint(i/6.0*fbo.getWidth(), 0);
@@ -331,7 +331,7 @@ void testApp::loadScreens(){
 		s->source[3] = ofPoint(i/6.0*fbo.getWidth(), fbo.getHeight());
 		s->leftPostIndex = i;
 		s->rightPostIndex = i+1;
-	}		
+	}
 }
 
 //--------------------------------------------------------------
@@ -359,15 +359,15 @@ void testApp::keyPressed(int key){
 		else if(key == OF_KEY_RIGHT){
 			fencePosts[selectedFencepostIndex] += .5;
 		}
-		
+
 		saveScreens();
 	}
-	   
+
 	if(currentScreen != NULL && currentPointDragIndex >= 0){
 		if(key == OF_KEY_RETURN){
 			currentPointDragIndex = (currentPointDragIndex + 1) % 4;
 		}
-		
+
 		if(key == OF_KEY_UP){
 			currentScreen->dest[currentPointDragIndex].y -= .5;
 		}
@@ -380,10 +380,10 @@ void testApp::keyPressed(int key){
 		else if(key == OF_KEY_RIGHT){
 			currentScreen->dest[currentPointDragIndex].x += .5;
 		}
-		
+
 		saveScreens();
 	}
-	
+
 	//1
 	if(key == '!'){
 		cam.cameraPositionFile = "camera1.xml";
@@ -393,7 +393,7 @@ void testApp::keyPressed(int key){
 		cam.cameraPositionFile = "camera1.xml";
 		cam.loadCameraPosition();
 	}
-	
+
 	if(key == '@'){
 		cam.cameraPositionFile = "camera2.xml";
 		cam.saveCameraPosition();
@@ -402,8 +402,8 @@ void testApp::keyPressed(int key){
 		cam.cameraPositionFile = "camera2.xml";
 		cam.loadCameraPosition();
 	}
-	
-	
+
+
 }
 
 //--------------------------------------------------------------
@@ -418,29 +418,29 @@ void testApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-	
+
 	if(editingHandles){
-		if(currentScreen != NULL){
+		if(currentScreen != NULL && draggingCorner){
 			currentScreen->dest[currentPointDragIndex] = ofVec2f(x,y) + dragOffset;
 		}
 		else if(fencepostSelected){
 			fencePosts[selectedFencepostIndex] = x + fencepostSelectOffset;
 		}
 	}
-	
+
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
 	if(editingHandles){
-		
+
 		ofHideCursor();
-		
+
 		fencepostSelected = false;
 		currentScreen = NULL;
 		currentPointDragIndex = -1;
 		draggingCorner = false;
-		
+
 		ofVec2f mousePoint(x,y);
 		//attempt to click point
 		for(int i = 0; i < screens.size(); i++){
@@ -454,7 +454,7 @@ void testApp::mousePressed(int x, int y, int button){
 				}
 			}
 		}
-		
+
 
 		//check for fencepost
 		for(int i = 0; i < fencePosts.size(); i++){
@@ -465,7 +465,7 @@ void testApp::mousePressed(int x, int y, int button){
 				return;
 			}
 		}
-		
+
 		//attempt to click square
 		for(int i = 0; i < screens.size(); i++){
 			if(insidePolygon(screens[i]->dest, 4, mousePoint)){
@@ -473,8 +473,8 @@ void testApp::mousePressed(int x, int y, int button){
 				return;
 			}
 		}
-		
-		
+
+
 	}
 }
 
@@ -484,7 +484,7 @@ void testApp::mouseReleased(int x, int y, int button){
 		saveScreens();
 		ofShowCursor();
 	}
-	
+
 }
 
 //--------------------------------------------------------------
@@ -498,7 +498,7 @@ void testApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void testApp::dragEvent(ofDragInfo dragInfo){ 
+void testApp::dragEvent(ofDragInfo dragInfo){
 
 }
 
@@ -552,7 +552,7 @@ void testApp::gaussian_elimination(float *input, int n){
 		}
 		j++;
 	}
-	
+
 	//back substitution
 	for(int i=m-2; i>=0; i--)
 	{
@@ -566,7 +566,7 @@ void testApp::gaussian_elimination(float *input, int n){
 
 
 void testApp::findHomography(ofVec2f src[4], ofVec2f dst[4], float homography[16]) {
-	
+
 	// create the equation system to be solved
 	//
 	// from: Multiple View Geometry in Computer Vision 2ed
@@ -595,11 +595,11 @@ void testApp::findHomography(ofVec2f src[4], ofVec2f dst[4], float homography[16
 		{-src[3].x, -src[3].y, -1,   0,   0,  0, src[3].x*dst[3].x, src[3].y*dst[3].x, -dst[3].x }, // h31
 		{  0,   0,  0, -src[3].x, -src[3].y, -1, src[3].x*dst[3].y, src[3].y*dst[3].y, -dst[3].y }, // h32
 	};
-	
-	
+
+
 	gaussian_elimination(&P[0][0],9);
-	
-	
+
+
 	// gaussian elimination gives the results of the equation system
 	// in the last column of the original matrix.
 	// opengl needs the transposed 4x4 matrix:
@@ -608,32 +608,32 @@ void testApp::findHomography(ofVec2f src[4], ofVec2f dst[4], float homography[16
 		0      ,      0,0,0,       // 0    0   0 0
 		P[2][8],P[5][8],0,1
 	};      // h13  h23 0 h33
-	
+
 	for(int i=0; i<16; i++) homography[i] = aux_H[i];
 }
 
-			   
-bool testApp::insidePolygon(ofVec2f *polygon, int N, ofVec2f p) {  
-   int counter = 0;  
-   int i;  
-   double xinters;  
-   ofPoint p1,p2;  
-   
-   p1 = polygon[0];  
-   for (i=1;i<=N;i++) {  
-	   p2 = polygon[i % N];  
-	   if (p.y > MIN(p1.y,p2.y)) {  
-		   if (p.y <= MAX(p1.y,p2.y)) {  
-			   if (p.x <= MAX(p1.x,p2.x)) {  
-				   if (p1.y != p2.y) {  
-					   xinters = (p.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;  
-					   if (p1.x == p2.x || p.x <= xinters)  
-						   counter++;  
-				   }  
-			   }  
-		   }  
-	   }  
-	   p1 = p2;  
-   }  
+
+bool testApp::insidePolygon(ofVec2f *polygon, int N, ofVec2f p) {
+   int counter = 0;
+   int i;
+   double xinters;
+   ofPoint p1,p2;
+
+   p1 = polygon[0];
+   for (i=1;i<=N;i++) {
+	   p2 = polygon[i % N];
+	   if (p.y > MIN(p1.y,p2.y)) {
+		   if (p.y <= MAX(p1.y,p2.y)) {
+			   if (p.x <= MAX(p1.x,p2.x)) {
+				   if (p1.y != p2.y) {
+					   xinters = (p.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;
+					   if (p1.x == p2.x || p.x <= xinters)
+						   counter++;
+				   }
+			   }
+		   }
+	   }
+	   p1 = p2;
+   }
 	return counter % 2 != 0;
-}  
+}
