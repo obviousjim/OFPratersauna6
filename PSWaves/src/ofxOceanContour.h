@@ -16,6 +16,11 @@ class ofxOceanContour {
   public:
 	
 	ofxOceanContour();
+	string moodName;
+	int contourNumber;
+	
+	ofFloatColor baseColor;
+	ofFloatColor accentColor;
 	
 	float age;
 	ofVec2f velocity;
@@ -29,5 +34,7 @@ class ofxOceanContour {
 	void draw();
 	
 	ofxOcean* ocean;
-
+	float fftOffset;
+	float* fftData;
+	int fftDataLength;
 };

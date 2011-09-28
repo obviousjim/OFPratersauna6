@@ -32,8 +32,10 @@ class testApp : public ofBaseApp{
 	ofxOcean* ocean;
 	ofxOceanRenderer* renderer;
 	ofxOceanContourGenerator* contours;
+	
+	void createMoods();
+	vector<OceanContourMood*> moods;
 
-	bool scaleToView;
 	
 	bool drawFFT;
 	ofxFFTLive* fft;
@@ -55,6 +57,7 @@ class testApp : public ofBaseApp{
 	
 	bool editingHandles;
 	bool editingTextureRatios;
+	bool scaleToView;
 		
 	bool draggingCorner;
 	ofxPSScreen* currentScreen;
@@ -64,6 +67,7 @@ class testApp : public ofBaseApp{
 	bool fencepostSelected;
 	int selectedFencepostIndex;
 	float fencepostSelectOffset;
+	
 	
 	void gaussian_elimination(float *input, int n);
 	void findHomography(ofVec2f src[4], ofVec2f dst[4], float homography[16]);

@@ -19,7 +19,8 @@ void testApp::setup(){
 	
 	cam.useArrowKeys = false;
 	cam.usemouse = true;
-	cam.autosavePosition = true;
+	cam.autosavePosition = false;
+	cam.cameraPositionFile = "camera1.xml";
 	cam.loadCameraPosition();
 	
 	oceanTileSizeX = 200;
@@ -36,17 +37,15 @@ void testApp::setup(){
 	renderer->shaderLocation = "";
 	renderer->setup(ocean, 9, 9);
 	
-	contours = new ofxOceanContourGenerator();
-	contours->ocean = ocean;
-	contours->tileSize = 1000;
-	contours->step = 5;
-	contours->generate();
 	
 	drawFFT = false;
 	fft = new ofxFFTLive();
     fft->setMirrorData( false );
+	fft->setThreshold( 1.0 );
     fft->setup();
 
+	createMoods();
+	
 	scaleToView = false;
 	editingHandles = false;
 	editingTextureRatios = false;	
@@ -54,6 +53,43 @@ void testApp::setup(){
 	currentScreen = NULL;
 	
 	loadScreens();
+}
+
+void testApp::createMoods(){
+	contours = new ofxOceanContourGenerator();
+	contours->ocean = ocean;
+	contours->tileSize = 1000;
+	contours->step = 4;
+	contours->fft = fft;
+
+	/*
+	OceanContourMood* m = new OceanContourMood();
+	m->name = "basic";
+	m->thicknessA = .6;
+	m->thicknessB = .2;
+	m->velocityA = ofVec2f(.7, 0);
+	m->velocityB = ofVec2f(.2, 0);
+	m->targetDensity = 250;
+	m->baseColor = ofFloatColor(1.0,1.0,1.0);
+	m->accentColor = ofFloatColor(1.0, .35, 0);
+	moods.push_back( m );
+	*/
+
+	 OceanContourMood* m = new OceanContourMood();
+	 m->name = "basic";
+	 m->thicknessA = .6;
+	 m->thicknessB = .2;
+	 m->velocityA = ofVec2f(1.0, 0);
+	 m->velocityB = ofVec2f(.1, 0);
+	 m->targetDensity = 400;
+	 m->baseColor = ofFloatColor(1.0,1.0,1.0);
+	 m->accentColor = ofFloatColor(1.0, .35, 0);
+	 moods.push_back( m );
+	
+	contours->currentMood = m;
+	
+	contours->generate();
+
 }
 
 //--------------------------------------------------------------
@@ -347,6 +383,26 @@ void testApp::keyPressed(int key){
 		
 		saveScreens();
 	}
+	
+	//1
+	if(key == '!'){
+		cam.cameraPositionFile = "camera1.xml";
+		cam.saveCameraPosition();
+	}
+	else if(key == '1'){
+		cam.cameraPositionFile = "camera1.xml";
+		cam.loadCameraPosition();
+	}
+	
+	if(key == '@'){
+		cam.cameraPositionFile = "camera2.xml";
+		cam.saveCameraPosition();
+	}
+	else if(key == '2'){
+		cam.cameraPositionFile = "camera2.xml";
+		cam.loadCameraPosition();
+	}
+	
 	
 }
 
