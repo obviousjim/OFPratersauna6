@@ -15,11 +15,12 @@ void testApp::setup(){
 	
 	cam.setScale(1,-1,1);
 	cam.speed = 1.5;
+	cam.setFov(30);
+	
 	cam.useArrowKeys = false;
 	cam.usemouse = true;
 	cam.autosavePosition = true;
 	cam.loadCameraPosition();
-	
 	
 	oceanTileSizeX = 200;
 	oceanTileSizeY = 200;
@@ -27,32 +28,48 @@ void testApp::setup(){
 	ocean = new ofxOcean();
     ocean->size = ofVec3f(oceanTileSizeX, 1.0, oceanTileSizeY);
     ocean->windSpeed = 32;
-	
+
     //all other ocean params are set per frame
     ocean->setup();
 	
 	renderer = new ofxOceanRenderer();
 	renderer->shaderLocation = "";
 	renderer->setup(ocean, 9, 9);
-
 	
+	contours = new ofxOceanContourGenerator();
+	contours->ocean = ocean;
+	contours->tileSize = 1000;
+	contours->step = 5;
+	contours->generate();
+	
+	drawFFT = false;
+	fft = new ofxFFTLive();
+    fft->setMirrorData( false );
+    fft->setup();
+
+	scaleToView = false;
 	editingHandles = false;
 	editingTextureRatios = false;	
 	draggingCorner = false;
 	currentScreen = NULL;
+	
 	loadScreens();
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
-    ocean->waveScale = ofGetMouseX()/100.0;
-    ocean->choppyScale = ofGetMouseY()/200.0;
+    ocean->waveScale = 3;
+    ocean->choppyScale = 6.0;
 	
-    ocean->waveSpeed = 10;
+    ocean->waveSpeed = 5;
 	ocean->setFrameNum(ofGetFrameNum());
     ocean->update();
 	
 	renderer->update();
+	
+	fft->update();
+
+	contours->update();
 }
 
 //--------------------------------------------------------------
@@ -63,7 +80,10 @@ void testApp::draw(){
 		
 	cam.begin(ofRectangle(0, 0, fbo.getWidth(), fbo.getHeight()));
 	ofSetColor(255, 255, 255, 255);
-	renderer->drawWireframe();
+	
+//	renderer->drawWireframe();
+	contours->draw();
+	
 	cam.end();
 	
 	//draw grid if we're editing
@@ -91,8 +111,15 @@ void testApp::draw(){
 	}
 	
 	fbo.end();
-	
-	splitAndDraw();
+	if(scaleToView){
+		//calculate how to draw onto main screen
+		float widthRatio = ofGetWidth()/fbo.getWidth();
+		float newHeight = fbo.getHeight()*widthRatio;
+		fbo.getTextureReference().draw(0,0,ofGetWidth(), newHeight);
+	}
+	else{
+		splitAndDraw();
+	}
 	
 	if(editingHandles){
 		ofPushStyle();
@@ -143,13 +170,10 @@ void testApp::draw(){
 		
 		ofPopStyle();
 	}
-	
-	
+	if(drawFFT){
+		fft->draw( 10, 10 );
+	}
 
-//	//calculate how to draw onto main screen
-//	float widthRatio = ofGetWidth()/fbo.getWidth();
-//	float newHeight = fbo.getHeight()*widthRatio;
-//	fbo.getTextureReference().draw(0,0,ofGetWidth(), newHeight);
 
 }
 
@@ -276,11 +300,19 @@ void testApp::loadScreens(){
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
+	if(key == 'v'){
+		scaleToView = !scaleToView;
+		if(scaleToView){
+			ofSetFullscreen(true);
+		}
+	}
 	if(key == ' '){
 		editingHandles = !editingHandles;
 		cam.usemouse = !editingHandles;
 	}
-	
+	if(key == 'f'){
+		drawFFT = !drawFFT;
+	}
 	if(fencepostSelected && selectedFencepostIndex >= 0){
 		if(key == OF_KEY_RETURN){
 			selectedFencepostIndex = (selectedFencepostIndex + 1) % 7;
@@ -346,6 +378,8 @@ void testApp::mouseDragged(int x, int y, int button){
 void testApp::mousePressed(int x, int y, int button){
 	if(editingHandles){
 		
+		ofHideCursor();
+		
 		fencepostSelected = false;
 		currentScreen = NULL;
 		
@@ -392,6 +426,7 @@ void testApp::mousePressed(int x, int y, int button){
 void testApp::mouseReleased(int x, int y, int button){
 	if(editingHandles){
 		saveScreens();
+		ofShowCursor();
 	}
 	
 }

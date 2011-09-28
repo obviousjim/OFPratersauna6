@@ -4,6 +4,8 @@
 #include "ofxOcean.h"
 #include "ofxGameCamera.h"
 #include "ofxOceanRenderer.h"
+#include "ofxFFTLive.h"
+#include "ofxOceanContourGenerator.h"
 
 #include "ofxPSScreen.h"
 
@@ -25,11 +27,16 @@ class testApp : public ofBaseApp{
 	void gotMessage(ofMessage msg);
 
 	ofFbo fbo;
+	ofxGameCamera cam;
+	
 	ofxOcean* ocean;
 	ofxOceanRenderer* renderer;
+	ofxOceanContourGenerator* contours;
 
-	ofxGameCamera cam;
-	ofVideoGrabber vid;
+	bool scaleToView;
+	
+	bool drawFFT;
+	ofxFFTLive* fft;
 	
 	void splitAndDraw();
 	void saveScreens();
