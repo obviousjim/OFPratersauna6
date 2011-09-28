@@ -420,7 +420,7 @@ void testApp::mouseMoved(int x, int y ){
 void testApp::mouseDragged(int x, int y, int button){
 	
 	if(editingHandles){
-		if(currentScreen != NULL){
+		if(currentScreen != NULL && draggingCorner){
 			currentScreen->dest[currentPointDragIndex] = ofVec2f(x,y) + dragOffset;
 		}
 		else if(fencepostSelected){
