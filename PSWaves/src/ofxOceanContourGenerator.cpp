@@ -72,9 +72,9 @@ void ofxOceanContourGenerator::update(){
 	
 	for(int i = 0; i < contours.size(); i++){
 		contours[i]->update();		
-//		if(i != contours.size()-1){
 		int fftIndex = (fftDataPointer - i + contours.size()) % contours.size();
 		contours[i]->fftData = fftPeakData[fftIndex];
+		contours[i]->fftScale = fftScale;
 	}
 	
 	bool needsSort = false;

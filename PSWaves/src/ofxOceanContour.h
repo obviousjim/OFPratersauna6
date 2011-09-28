@@ -37,4 +37,5 @@ class ofxOceanContour {
 	float fftOffset;
 	float* fftData;
 	int fftDataLength;
+	float fftScale;
 };

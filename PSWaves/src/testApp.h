@@ -6,6 +6,7 @@
 #include "ofxOceanRenderer.h"
 #include "ofxFFTLive.h"
 #include "ofxOceanContourGenerator.h"
+#include "ofxOsc.h"
 
 #include "ofxPSScreen.h"
 
@@ -26,12 +27,18 @@ class testApp : public ofBaseApp{
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
 
+	void handleOSC();
+	
 	ofFbo fbo;
 	ofxGameCamera cam;
 	
 	ofxOcean* ocean;
 	ofxOceanRenderer* renderer;
 	ofxOceanContourGenerator* contours;
+	float targetChoppy;
+	float targetHeight;
+	
+	ofxOscReceiver oscreceiver;
 	
 	void createMoods();
 	vector<OceanContourMood*> moods;
@@ -39,6 +46,7 @@ class testApp : public ofBaseApp{
 	
 	bool drawFFT;
 	ofxFFTLive* fft;
+	float fftScale;
 	
 	void splitAndDraw();
 	void saveScreens();
