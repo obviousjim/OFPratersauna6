@@ -34,12 +34,12 @@
 		E7AC32731430F2C300552CF4 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC326D1430F2C300552CF4 /* tinyxmlerror.cpp */; };
 		E7AC32741430F2C300552CF4 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC326E1430F2C300552CF4 /* tinyxmlparser.cpp */; };
 		E7AC32751430F2C300552CF4 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC32701430F2C300552CF4 /* ofxXmlSettings.cpp */; };
-		E7AC34F51433329F00552CF4 /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC34EA1433329F00552CF4 /* fft.cpp */; };
-		E7AC34F61433329F00552CF4 /* ofxFFTBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC34EC1433329F00552CF4 /* ofxFFTBase.cpp */; };
-		E7AC34F71433329F00552CF4 /* ofxFFTFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC34EE1433329F00552CF4 /* ofxFFTFile.cpp */; };
-		E7AC34F81433329F00552CF4 /* ofxFFTLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC34F01433329F00552CF4 /* ofxFFTLive.cpp */; };
 		E7AC3544143338A800552CF4 /* ofxOceanContour.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC3543143338A800552CF4 /* ofxOceanContour.cpp */; };
 		E7AC3547143338EE00552CF4 /* ofxOceanContourGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC3546143338EE00552CF4 /* ofxOceanContourGenerator.cpp */; };
+		E7AC394314339CBF00552CF4 /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC393814339CBF00552CF4 /* fft.cpp */; };
+		E7AC394414339CBF00552CF4 /* ofxFFTBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC393A14339CBF00552CF4 /* ofxFFTBase.cpp */; };
+		E7AC394514339CBF00552CF4 /* ofxFFTFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC393C14339CBF00552CF4 /* ofxFFTFile.cpp */; };
+		E7AC394614339CBF00552CF4 /* ofxFFTLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E7AC393E14339CBF00552CF4 /* ofxFFTLive.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,19 +115,19 @@
 		E7AC32701430F2C300552CF4 /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxXmlSettings.cpp; sourceTree = "<group>"; };
 		E7AC32711430F2C300552CF4 /* ofxXmlSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
 		E7AC331414326BC700552CF4 /* ofxPSScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxPSScreen.h; sourceTree = "<group>"; };
-		E7AC34EA1433329F00552CF4 /* fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fft.cpp; sourceTree = "<group>"; };
-		E7AC34EB1433329F00552CF4 /* fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fft.h; sourceTree = "<group>"; };
-		E7AC34EC1433329F00552CF4 /* ofxFFTBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTBase.cpp; sourceTree = "<group>"; };
-		E7AC34ED1433329F00552CF4 /* ofxFFTBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTBase.h; sourceTree = "<group>"; };
-		E7AC34EE1433329F00552CF4 /* ofxFFTFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTFile.cpp; sourceTree = "<group>"; };
-		E7AC34EF1433329F00552CF4 /* ofxFFTFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTFile.h; sourceTree = "<group>"; };
-		E7AC34F01433329F00552CF4 /* ofxFFTLive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTLive.cpp; sourceTree = "<group>"; };
-		E7AC34F11433329F00552CF4 /* ofxFFTLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTLive.h; sourceTree = "<group>"; };
-		E7AC34F21433329F00552CF4 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		E7AC3542143338A800552CF4 /* ofxOceanContour.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxOceanContour.h; sourceTree = "<group>"; };
 		E7AC3543143338A800552CF4 /* ofxOceanContour.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxOceanContour.cpp; sourceTree = "<group>"; };
 		E7AC3545143338EE00552CF4 /* ofxOceanContourGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxOceanContourGenerator.h; sourceTree = "<group>"; };
 		E7AC3546143338EE00552CF4 /* ofxOceanContourGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxOceanContourGenerator.cpp; sourceTree = "<group>"; };
+		E7AC393814339CBF00552CF4 /* fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fft.cpp; sourceTree = "<group>"; };
+		E7AC393914339CBF00552CF4 /* fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fft.h; sourceTree = "<group>"; };
+		E7AC393A14339CBF00552CF4 /* ofxFFTBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTBase.cpp; sourceTree = "<group>"; };
+		E7AC393B14339CBF00552CF4 /* ofxFFTBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTBase.h; sourceTree = "<group>"; };
+		E7AC393C14339CBF00552CF4 /* ofxFFTFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTFile.cpp; sourceTree = "<group>"; };
+		E7AC393D14339CBF00552CF4 /* ofxFFTFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTFile.h; sourceTree = "<group>"; };
+		E7AC393E14339CBF00552CF4 /* ofxFFTLive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTLive.cpp; sourceTree = "<group>"; };
+		E7AC393F14339CBF00552CF4 /* ofxFFTLive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFFTLive.h; sourceTree = "<group>"; };
+		E7AC394014339CBF00552CF4 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,7 +158,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
-				E7AC34931433329F00552CF4 /* ofxFFT */,
+				E7AC38E114339CBE00552CF4 /* ofxFFT */,
 				E7AC32681430F2C300552CF4 /* ofxXmlSettings */,
 				E7AC321A1430F1D700552CF4 /* ofxGameCamera */,
 				E7AC32011430F15A00552CF4 /* ofxOcean */,
@@ -331,27 +331,27 @@
 			path = src;
 			sourceTree = "<group>";
 		};
-		E7AC34931433329F00552CF4 /* ofxFFT */ = {
+		E7AC38E114339CBE00552CF4 /* ofxFFT */ = {
 			isa = PBXGroup;
 			children = (
-				E7AC34E91433329F00552CF4 /* libs */,
-				E7AC34EC1433329F00552CF4 /* ofxFFTBase.cpp */,
-				E7AC34ED1433329F00552CF4 /* ofxFFTBase.h */,
-				E7AC34EE1433329F00552CF4 /* ofxFFTFile.cpp */,
-				E7AC34EF1433329F00552CF4 /* ofxFFTFile.h */,
-				E7AC34F01433329F00552CF4 /* ofxFFTLive.cpp */,
-				E7AC34F11433329F00552CF4 /* ofxFFTLive.h */,
-				E7AC34F21433329F00552CF4 /* README */,
+				E7AC393714339CBF00552CF4 /* libs */,
+				E7AC393A14339CBF00552CF4 /* ofxFFTBase.cpp */,
+				E7AC393B14339CBF00552CF4 /* ofxFFTBase.h */,
+				E7AC393C14339CBF00552CF4 /* ofxFFTFile.cpp */,
+				E7AC393D14339CBF00552CF4 /* ofxFFTFile.h */,
+				E7AC393E14339CBF00552CF4 /* ofxFFTLive.cpp */,
+				E7AC393F14339CBF00552CF4 /* ofxFFTLive.h */,
+				E7AC394014339CBF00552CF4 /* README */,
 			);
 			name = ofxFFT;
-			path = ../../../addons/ofxFFT;
+			path = ../ofxFFT;
 			sourceTree = SOURCE_ROOT;
 		};
-		E7AC34E91433329F00552CF4 /* libs */ = {
+		E7AC393714339CBF00552CF4 /* libs */ = {
 			isa = PBXGroup;
 			children = (
-				E7AC34EA1433329F00552CF4 /* fft.cpp */,
-				E7AC34EB1433329F00552CF4 /* fft.h */,
+				E7AC393814339CBF00552CF4 /* fft.cpp */,
+				E7AC393914339CBF00552CF4 /* fft.h */,
 			);
 			path = libs;
 			sourceTree = "<group>";
@@ -452,12 +452,12 @@
 				E7AC32731430F2C300552CF4 /* tinyxmlerror.cpp in Sources */,
 				E7AC32741430F2C300552CF4 /* tinyxmlparser.cpp in Sources */,
 				E7AC32751430F2C300552CF4 /* ofxXmlSettings.cpp in Sources */,
-				E7AC34F51433329F00552CF4 /* fft.cpp in Sources */,
-				E7AC34F61433329F00552CF4 /* ofxFFTBase.cpp in Sources */,
-				E7AC34F71433329F00552CF4 /* ofxFFTFile.cpp in Sources */,
-				E7AC34F81433329F00552CF4 /* ofxFFTLive.cpp in Sources */,
 				E7AC3544143338A800552CF4 /* ofxOceanContour.cpp in Sources */,
 				E7AC3547143338EE00552CF4 /* ofxOceanContourGenerator.cpp in Sources */,
+				E7AC394314339CBF00552CF4 /* fft.cpp in Sources */,
+				E7AC394414339CBF00552CF4 /* ofxFFTBase.cpp in Sources */,
+				E7AC394514339CBF00552CF4 /* ofxFFTFile.cpp in Sources */,
+				E7AC394614339CBF00552CF4 /* ofxFFTLive.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

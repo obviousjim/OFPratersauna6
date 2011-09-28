@@ -438,6 +438,8 @@ void testApp::mousePressed(int x, int y, int button){
 		
 		fencepostSelected = false;
 		currentScreen = NULL;
+		currentPointDragIndex = -1;
+		draggingCorner = false;
 		
 		ofVec2f mousePoint(x,y);
 		//attempt to click point
@@ -453,8 +455,6 @@ void testApp::mousePressed(int x, int y, int button){
 			}
 		}
 		
-		currentPointDragIndex = -1;
-		draggingCorner = false;
 
 		//check for fencepost
 		for(int i = 0; i < fencePosts.size(); i++){
