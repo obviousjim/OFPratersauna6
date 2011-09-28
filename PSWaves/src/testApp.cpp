@@ -66,6 +66,30 @@ void testApp::draw(){
 	renderer->drawWireframe();
 	cam.end();
 	
+	//draw grid if we're editing
+	if(editingHandles){
+		ofPushStyle();
+		ofSetColor(0, 255, 0);
+		for(int i = 0; i < fbo.getWidth(); i += 100){
+			ofLine(i, 0, i, fbo.getHeight());
+		}
+		
+		for(int i = 0; i < fbo.getHeight(); i += 100){
+			ofLine(0, i, fbo.getWidth(), i);		
+		}
+		
+		ofSetColor(255, 255, 0, 50);
+		for(int i = 0; i < fbo.getWidth(); i += 25){
+			ofLine(i, 0, i, fbo.getHeight());
+		}
+		
+		for(int i = 0; i < fbo.getHeight(); i += 25){
+			ofLine(0, i, fbo.getWidth(), i);		
+		}
+		
+		ofPopStyle();
+	}
+	
 	fbo.end();
 	
 	splitAndDraw();
@@ -104,6 +128,19 @@ void testApp::draw(){
 			}	
 			ofEndShape(true);
 		}
+		
+		ofSetLineWidth(10);
+		for(int i = 0; i < fencePosts.size(); i++){
+			if(fencepostSelected && selectedFencepostIndex == i){
+				ofSetColor(255, 0, 0);
+			}
+			else{
+				ofSetColor(255, 255, 0, 100);
+			}
+			ofLine(fencePosts[i], 0, fencePosts[i], fbo.getHeight());
+		}
+		ofSetLineWidth(1);
+		
 		ofPopStyle();
 	}
 	
@@ -127,17 +164,19 @@ void testApp::splitAndDraw(){
 		findHomography(screen->source, screen->dest,screen->correctionMatrix);
 		
 		glMultMatrixf(screen->correctionMatrix);
+		
 		glBegin(GL_QUADS);
-		glTexCoord2f(fbo.getWidth()*screen->textureStartPercent, 0);
+		
+		glTexCoord2f(fencePosts[screen->leftPostIndex], 0);
 		glVertex2f(screen->source[0].x, screen->source[0].y);
 		
-		glTexCoord2f(fbo.getWidth()*screen->textureStopPercent, 0);
+		glTexCoord2f(fencePosts[screen->rightPostIndex], 0);
 		glVertex2f(screen->source[1].x, screen->source[1].y);
 
-		glTexCoord2f(fbo.getWidth()*screen->textureStopPercent, fbo.getHeight());
+		glTexCoord2f(fencePosts[screen->rightPostIndex], fbo.getHeight());
 		glVertex2f(screen->source[2].x, screen->source[2].y);
 
-		glTexCoord2f(fbo.getWidth()*screen->textureStartPercent, fbo.getHeight());
+		glTexCoord2f(fencePosts[screen->leftPostIndex], fbo.getHeight());
 		glVertex2f(screen->source[3].x, screen->source[3].y);
 		
 		glEnd();
@@ -167,8 +206,15 @@ void testApp::saveScreens(){
 		savedsettings.popTag();//dest
 		savedsettings.popTag();//screen;
 	}
-	
 	savedsettings.popTag();//screens
+
+	savedsettings.addTag("posts");
+	savedsettings.pushTag("posts");
+	for(int i = 0; i < 7; i++){
+		savedsettings.addValue("post", fencePosts[i]);
+	}
+	savedsettings.popTag();//posts;
+	
 	savedsettings.saveFile("screens.xml");
 }
 
@@ -180,12 +226,7 @@ void testApp::loadScreens(){
 		for(int i = 0; i < 6; i++){
 			savedsettings.pushTag("screen", i);
 			ofxPSScreen* s = new ofxPSScreen();
-			
-			s->bottomCrop = 0;
-			s->topCrop = 0;
-			s->textureStartPercent = i/6.0;
-			s->textureStopPercent = (i+1)/6.0;
-			
+						
 			savedsettings.pushTag("dest");
 			for(int p = 0; p < 4; p++){
 				s->dest[p] = ofVec2f(savedsettings.getValue("x", 0.0, p),
@@ -196,19 +237,28 @@ void testApp::loadScreens(){
 			
 			screens.push_back( s );
 		}
+		savedsettings.popTag(); //screens
+		
+		savedsettings.pushTag("posts");
+		for(int i = 0; i < 7; i++){
+			fencePosts.push_back(savedsettings.getValue("post", .0, i));
+		}
+		savedsettings.popTag();
 	}
-	else{
+	else {
+		for(int i = 0; i < 7; i++){
+			fencePosts.push_back(i/6.0 * fbo.getWidth());
+		}
+		
 		//make new ones
 		for(int i = 0; i < 6; i++){
 			ofxPSScreen* s = new ofxPSScreen();
-			s->bottomCrop = 0;
-			s->topCrop = 0;
-			s->textureStartPercent = i/6.0;
-			s->textureStopPercent = (i+1)/6.0;
-			s->dest[0] = ofVec2f(s->textureStartPercent*fbo.getWidth(), 0);
-			s->dest[1] = ofVec2f(s->textureStopPercent*fbo.getWidth(), 0);
-			s->dest[2] = ofVec2f(s->textureStopPercent*fbo.getWidth(), fbo.getHeight());
-			s->dest[3] = ofVec2f(s->textureStartPercent*fbo.getWidth(), fbo.getHeight());
+			s->leftPostIndex = i;
+			s->rightPostIndex = i+1;
+			s->dest[0] = ofVec2f(fencePosts[s->leftPostIndex], 0);
+			s->dest[1] = ofVec2f(fencePosts[s->rightPostIndex], 0);
+			s->dest[2] = ofVec2f(fencePosts[s->rightPostIndex], fbo.getHeight());
+			s->dest[3] = ofVec2f(fencePosts[s->leftPostIndex], fbo.getHeight());
 			screens.push_back( s );
 		}
 	}
@@ -219,6 +269,8 @@ void testApp::loadScreens(){
 		s->source[1] = ofPoint((i+1)/6.0*fbo.getWidth(), 0);
 		s->source[2] = ofPoint((i+1)/6.0*fbo.getWidth(), fbo.getHeight());
 		s->source[3] = ofPoint(i/6.0*fbo.getWidth(), fbo.getHeight());
+		s->leftPostIndex = i;
+		s->rightPostIndex = i+1;
 	}		
 }
 
@@ -226,7 +278,44 @@ void testApp::loadScreens(){
 void testApp::keyPressed(int key){
 	if(key == ' '){
 		editingHandles = !editingHandles;
+		cam.usemouse = !editingHandles;
 	}
+	
+	if(fencepostSelected && selectedFencepostIndex >= 0){
+		if(key == OF_KEY_RETURN){
+			selectedFencepostIndex = (selectedFencepostIndex + 1) % 7;
+		}
+		if(key == OF_KEY_LEFT){
+			fencePosts[selectedFencepostIndex] -= .5;
+		}
+		else if(key == OF_KEY_RIGHT){
+			fencePosts[selectedFencepostIndex] += .5;
+		}
+		
+		saveScreens();
+	}
+	   
+	if(currentScreen != NULL && currentPointDragIndex >= 0){
+		if(key == OF_KEY_RETURN){
+			currentPointDragIndex = (currentPointDragIndex + 1) % 4;
+		}
+		
+		if(key == OF_KEY_UP){
+			currentScreen->dest[currentPointDragIndex].y -= .5;
+		}
+		else if(key == OF_KEY_DOWN){
+			currentScreen->dest[currentPointDragIndex].y += .5;
+		}
+		else if(key == OF_KEY_LEFT){
+			currentScreen->dest[currentPointDragIndex].x -= .5;
+		}
+		else if(key == OF_KEY_RIGHT){
+			currentScreen->dest[currentPointDragIndex].x += .5;
+		}
+		
+		saveScreens();
+	}
+	
 }
 
 //--------------------------------------------------------------
@@ -241,15 +330,27 @@ void testApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-	if(editingHandles && currentScreen != NULL){
-		currentScreen->dest[currentPointDragIndex] = ofVec2f(x,y) + dragOffset;
+	
+	if(editingHandles){
+		if(currentScreen != NULL){
+			currentScreen->dest[currentPointDragIndex] = ofVec2f(x,y) + dragOffset;
+		}
+		else if(fencepostSelected){
+			fencePosts[selectedFencepostIndex] = x + fencepostSelectOffset;
+		}
 	}
+	
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
 	if(editingHandles){
+		
+		fencepostSelected = false;
+		currentScreen = NULL;
+		
 		ofVec2f mousePoint(x,y);
+		//attempt to click point
 		for(int i = 0; i < screens.size(); i++){
 			for (int p = 0; p < 4; p++) {
 				if(mousePoint.distance(screens[i]->dest[p]) < 20){
@@ -257,18 +358,39 @@ void testApp::mousePressed(int x, int y, int button){
 					currentPointDragIndex = p;
 					dragOffset = screens[i]->dest[p] - mousePoint;
 					draggingCorner = true;
-					break;
+					return;
 				}
 			}
 		}
+		
+		currentPointDragIndex = -1;
+		draggingCorner = false;
+
+		//check for fencepost
+		for(int i = 0; i < fencePosts.size(); i++){
+			if(fabs(mousePoint.x - fencePosts[i]) < 10){
+				selectedFencepostIndex = i;
+				fencepostSelected = true;
+				fencepostSelectOffset = fencePosts[i] - mousePoint.x;
+				return;
+			}
+		}
+		
+		//attempt to click square
+		for(int i = 0; i < screens.size(); i++){
+			if(insidePolygon(screens[i]->dest, 4, mousePoint)){
+				currentScreen = screens[i];
+				return;
+			}
+		}
+		
+		
 	}
 }
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
 	if(editingHandles){
-		currentPointDragIndex = -1;
-		draggingCorner = false;
 		saveScreens();
 	}
 	
@@ -398,3 +520,29 @@ void testApp::findHomography(ofVec2f src[4], ofVec2f dst[4], float homography[16
 	
 	for(int i=0; i<16; i++) homography[i] = aux_H[i];
 }
+
+			   
+bool testApp::insidePolygon(ofVec2f *polygon, int N, ofVec2f p) {  
+   int counter = 0;  
+   int i;  
+   double xinters;  
+   ofPoint p1,p2;  
+   
+   p1 = polygon[0];  
+   for (i=1;i<=N;i++) {  
+	   p2 = polygon[i % N];  
+	   if (p.y > MIN(p1.y,p2.y)) {  
+		   if (p.y <= MAX(p1.y,p2.y)) {  
+			   if (p.x <= MAX(p1.x,p2.x)) {  
+				   if (p1.y != p2.y) {  
+					   xinters = (p.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;  
+					   if (p1.x == p2.x || p.x <= xinters)  
+						   counter++;  
+				   }  
+			   }  
+		   }  
+	   }  
+	   p1 = p2;  
+   }  
+	return counter % 2 != 0;
+}  

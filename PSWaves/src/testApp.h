@@ -44,6 +44,8 @@ class testApp : public ofBaseApp{
 	
 	//edit mode stuff
 	vector<ofxPSScreen*> screens;
+	vector<float> fencePosts;
+	
 	bool editingHandles;
 	bool editingTextureRatios;
 		
@@ -52,6 +54,11 @@ class testApp : public ofBaseApp{
 	int currentPointDragIndex;
 	ofVec2f dragOffset;
 	
+	bool fencepostSelected;
+	int selectedFencepostIndex;
+	float fencepostSelectOffset;
+	
 	void gaussian_elimination(float *input, int n);
 	void findHomography(ofVec2f src[4], ofVec2f dst[4], float homography[16]);
+	bool insidePolygon(ofVec2f *polygon, int N, ofVec2f p);
 };

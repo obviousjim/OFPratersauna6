@@ -14,10 +14,8 @@ class ofxPSScreen {
   public:
 	ofVec2f source[4];
 	ofVec2f dest[4];
-	float textureStartPercent;
-	float textureStopPercent;
-	int topCrop;
-	int bottomCrop;
+	int leftPostIndex;
+	float rightPostIndex;
 	
 	GLfloat correctionMatrix[16];
 };
