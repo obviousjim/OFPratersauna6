@@ -46,6 +46,7 @@ class ofxOceanContourGenerator {
 	
 	vector<float*> fftPeakData;
 	int fftDataPointer;
+	float fftScale;
 	
 	bool onA;
 	float switchTime;

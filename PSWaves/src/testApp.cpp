@@ -37,12 +37,16 @@ void testApp::setup(){
 	renderer->shaderLocation = "";
 	renderer->setup(ocean, 9, 9);
 	
+	oscreceiver.setup(12000);
 	
 	drawFFT = false;
 	fft = new ofxFFTLive();
     fft->setMirrorData( false );
 	fft->setThreshold( 1.0 );
     fft->setup();
+
+	targetHeight = 3.0;
+	targetChoppy = 6.0;
 
 	createMoods();
 	
@@ -62,31 +66,53 @@ void testApp::createMoods(){
 	contours->step = 4;
 	contours->fft = fft;
 
-	/*
 	OceanContourMood* m = new OceanContourMood();
 	m->name = "basic";
 	m->thicknessA = .6;
 	m->thicknessB = .2;
-	m->velocityA = ofVec2f(.7, 0);
-	m->velocityB = ofVec2f(.2, 0);
+	m->velocityA = ofVec2f(1.0, 0);
+	m->velocityB = ofVec2f(.1, 0);
 	m->targetDensity = 250;
 	m->baseColor = ofFloatColor(1.0,1.0,1.0);
 	m->accentColor = ofFloatColor(1.0, .35, 0);
 	moods.push_back( m );
-	*/
-
-	 OceanContourMood* m = new OceanContourMood();
-	 m->name = "basic";
-	 m->thicknessA = .6;
-	 m->thicknessB = .2;
-	 m->velocityA = ofVec2f(1.0, 0);
-	 m->velocityB = ofVec2f(.1, 0);
-	 m->targetDensity = 400;
-	 m->baseColor = ofFloatColor(1.0,1.0,1.0);
-	 m->accentColor = ofFloatColor(1.0, .35, 0);
-	 moods.push_back( m );
-	
 	contours->currentMood = m;
+
+	m = new OceanContourMood();
+	m->name = "thicksparse";
+	m->thicknessA = 2.0;
+	m->thicknessB = .4;
+	m->velocityA = ofVec2f(1.0, 0);
+	m->velocityB = ofVec2f(.3, 0);
+	m->targetDensity = 100;
+	m->baseColor = ofFloatColor(0.0,114/255.0,182/255);
+	m->accentColor = ofFloatColor(1.0,1.0,1.0);
+	moods.push_back( m );
+
+	
+	m = new OceanContourMood();
+	m->name = "thinsparse";
+	m->thicknessA = .2;
+	m->thicknessB = .05;
+	m->velocityA = ofVec2f(2.0, 0);
+	m->velocityB = ofVec2f(.5, 0);
+	m->targetDensity = 100;
+	m->baseColor = ofFloatColor(.75, .75, .75);
+	m->accentColor = ofFloatColor(.8,.0, 1.0);
+	moods.push_back( m );
+
+	m = new OceanContourMood();
+	m->name = "thindense";
+	m->thicknessA = .1;
+	m->thicknessB = .05;
+	m->velocityA = ofVec2f(2.0, 0);
+	m->velocityB = ofVec2f(.5, 0);
+	m->targetDensity = 300;
+	m->baseColor = ofFloatColor(1.0,1.0,0.0);
+	m->accentColor = ofFloatColor(1.0, .35, 0);
+	
+	moods.push_back( m );
+	
 	
 	contours->generate();
 
@@ -94,10 +120,12 @@ void testApp::createMoods(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-    ocean->waveScale = 3;
-    ocean->choppyScale = 6.0;
 	
+
+    ocean->waveScale += (targetHeight - ocean->waveScale)*.01;
+    ocean->choppyScale += (targetChoppy - ocean->choppyScale)*.01;
     ocean->waveSpeed = 5;
+	
 	ocean->setFrameNum(ofGetFrameNum());
     ocean->update();
 	
@@ -106,6 +134,8 @@ void testApp::update(){
 	fft->update();
 
 	contours->update();
+	
+	handleOSC();
 }
 
 //--------------------------------------------------------------
@@ -334,6 +364,50 @@ void testApp::loadScreens(){
 	}		
 }
 
+
+void testApp::handleOSC(){ 
+	while(oscreceiver.hasWaitingMessages()){
+		ofxOscMessage m;
+		oscreceiver.getNextMessage(&m);
+		
+		if(m.getAddress() == "/camera1"){
+			cam.cameraPositionFile = "camera1.xml";
+		}
+		if(m.getAddress() == "/camera2"){
+			cam.cameraPositionFile = "camera2.xml";
+		}
+		if(m.getAddress() == "/camera3"){
+			cam.cameraPositionFile = "camera3.xml";
+		}
+		if(m.getAddress() == "/camera4"){
+			cam.cameraPositionFile = "camera4.xml";
+		}
+		if(m.getAddress() == "/camera5"){
+			cam.cameraPositionFile = "camera5.xml";
+		}
+		
+		if(m.getAddress() == "/mood1"){
+			contours->currentMood = moods[0];
+		}
+		if(m.getAddress() == "/mood2"){
+			contours->currentMood = moods[1];			
+		}
+		if(m.getAddress() == "/mood3"){
+			contours->currentMood = moods[2];			
+		}
+		if(m.getAddress() == "/mood4"){
+			contours->currentMood = moods[3];						
+		}
+		
+		if(m.getAddress() == "/waveheight"){
+			targetHeight = m.getArgAsFloat(0);
+		}
+		if(m.getAddress() == "/wavechoppy"){
+			targetChoppy = m.getArgAsFloat(0);
+		}
+	}	
+}
+
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
 	if(key == 'v'){
@@ -385,24 +459,26 @@ void testApp::keyPressed(int key){
 	}
 	
 	//1
-	if(key == '!'){
+	if(key == '1'){
 		cam.cameraPositionFile = "camera1.xml";
-		cam.saveCameraPosition();
-	}
-	else if(key == '1'){
-		cam.cameraPositionFile = "camera1.xml";
-		cam.loadCameraPosition();
-	}
-	
-	if(key == '@'){
-		cam.cameraPositionFile = "camera2.xml";
 		cam.saveCameraPosition();
 	}
 	else if(key == '2'){
 		cam.cameraPositionFile = "camera2.xml";
-		cam.loadCameraPosition();
+		cam.saveCameraPosition();
 	}
-	
+	else if(key == '4'){
+		cam.cameraPositionFile = "camera3.xml";
+		cam.saveCameraPosition();
+	}
+	else if(key == '5'){
+		cam.cameraPositionFile = "camera4.xml";
+		cam.saveCameraPosition();
+	}
+	else if(key == '5'){
+		cam.cameraPositionFile = "camera5.xml";
+		cam.saveCameraPosition();
+	}
 	
 }
 
@@ -427,7 +503,6 @@ void testApp::mouseDragged(int x, int y, int button){
 			fencePosts[selectedFencepostIndex] = x + fencepostSelectOffset;
 		}
 	}
-	
 }
 
 //--------------------------------------------------------------
