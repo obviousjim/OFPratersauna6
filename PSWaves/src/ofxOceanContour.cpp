@@ -45,7 +45,8 @@ void ofxOceanContour::draw(){
 		if(fftData != NULL){
 			int fftPointA = ofMap(i, 0, numsteps-1, 0, fftDataLength-1);
 			int fftPointB = fftPointA+1;
-			fftPush = ofMap(fftData[fftPointA], .0, 1.0, 0, fftScale, false);
+			float fftSamp = ofMap(fftData[fftPointA]*fftData[fftPointA], .25, 1.0, 0, 1.0, true);
+			fftPush = ofMap(fftSamp, .0, 1.0, 0, fftScale, false);
 		}
 		ofVec2f sampleLeft = currentPoint + leftStep*thickness/2.0;
 		ofVec2f sampleRight = currentPoint + rightStep*thickness/2.0;

@@ -2,6 +2,7 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
+    glEnable(GL_DEPTH_TEST);
 
 	ofSetFrameRate(30);
 	ofSetVerticalSync(true);
@@ -40,7 +41,7 @@ void testApp::setup(){
 
 	drawFFT = false;
 	fft = new ofxFFTLive();
-    fft->setMirrorData( false );
+    fft->setMirrorData( true );
 	fft->setThreshold( 1.0 );
     fft->setup();
 
@@ -62,16 +63,17 @@ void testApp::createMoods(){
 	contours = new ofxOceanContourGenerator();
 	contours->ocean = ocean;
 	contours->tileSize = ofVec2f(500, 2000);
-	contours->step = 4;
+	contours->step = 8;
 	contours->fft = fft;
+
 
 	 OceanContourMood* m = new OceanContourMood();
 	 m->name = "basic";
-	 m->thicknessA = .6;
-	 m->thicknessB = .2;
+	 m->thicknessA = .4;
+	 m->thicknessB = 1.;
 	 m->velocityA = ofVec2f(1.0, 0);
-	 m->velocityB = ofVec2f(.1, 0);
-	 m->targetDensity = 200;
+	 m->velocityB = ofVec2f(.5, 0);
+	 m->targetDensity = 300;
 	 m->baseColor = ofFloatColor(1.0,1.0,1.0);
 	 m->accentColor = ofFloatColor(1.0, .35, 0);
 	 moods.push_back( m );
@@ -81,36 +83,35 @@ void testApp::createMoods(){
 	m = new OceanContourMood();
 	m->name = "thicksparse";
 	m->thicknessA = 2.0;
-	m->thicknessB = .4;
+	m->thicknessB = 1;
 	m->velocityA = ofVec2f(1.0, 0);
 	m->velocityB = ofVec2f(.3, 0);
-	m->targetDensity = 50;
-	m->baseColor = ofFloatColor(0.0,114/255.0,182/255);
+	m->targetDensity = 100;
+	m->baseColor = ofFloatColor(0.0, 20/255.0,182/255.0);
 	m->accentColor = ofFloatColor(1.0,1.0,1.0);
 	moods.push_back( m );
 
 
 	m = new OceanContourMood();
 	m->name = "thinsparse";
-	m->thicknessA = .2;
-	m->thicknessB = .05;
+	m->thicknessA = .3;
+	m->thicknessB = .1;
 	m->velocityA = ofVec2f(2.0, 0);
 	m->velocityB = ofVec2f(.5, 0);
-	m->targetDensity = 50;
+	m->targetDensity = 150;
 	m->baseColor = ofFloatColor(.75, .75, .75);
 	m->accentColor = ofFloatColor(.8,.0, 1.0);
 	moods.push_back( m );
 
 	m = new OceanContourMood();
 	m->name = "thindense";
-	m->thicknessA = .1;
-	m->thicknessB = .05;
+	m->thicknessA = .2;
+	m->thicknessB = .5;
 	m->velocityA = ofVec2f(2.0, 0);
 	m->velocityB = ofVec2f(.5, 0);
-	m->targetDensity = 150;
-	m->baseColor = ofFloatColor(1.0,1.0,0.0);
-	m->accentColor = ofFloatColor(1.0, .35, 0);
-
+	m->targetDensity = 300;
+	m->baseColor = ofFloatColor(1.0, .35, 0);
+	m->accentColor = ofFloatColor(1.0,1.0,0.0);
 	moods.push_back( m );
 
 	contours->generate();
@@ -121,7 +122,8 @@ void testApp::createMoods(){
 void testApp::update(){
     ocean->waveScale += (targetHeight - ocean->waveScale)*.01;
     ocean->choppyScale += (targetChoppy - ocean->choppyScale)*.01;
-   ocean->waveSpeed = 5;
+   ocean->waveSpeed = 8;
+	contours->fftScale = fftScale;
 
 	ocean->setFrameNum(ofGetFrameNum());
     ocean->update();
@@ -234,7 +236,7 @@ void testApp::draw(){
 		ofPopStyle();
 	}
 	if(drawFFT){
-		fft->draw( 10, 10 );
+		fft->draw( mouseX, mouseY );
 	}
 
 
@@ -367,9 +369,9 @@ void testApp::handleOSC(){
 
 		ofxOscMessage m;
 		oscreceiver.getNextMessage(&m);
-		
-		cout << "RECEIVED OSC " << m.getAddress() << " arg? " << m.getArgAsInt32(0) << endl;
-		
+
+		cout << "RECEIVED OSC " << m.getAddress() << endl;
+
 		if(m.getAddress() == "/camera1"){
 			cam.cameraPositionFile = "camera1.xml";
 			cam.loadCameraPosition();
@@ -410,9 +412,9 @@ void testApp::handleOSC(){
 		if(m.getAddress() == "/wavechoppy"){
 			targetChoppy = m.getArgAsFloat(0);
 		}
-		
+
 		if(m.getAddress() == "/fftscale"){
-			contours->fftScale = m.getArgAsFloat(0);
+			fftScale = m.getArgAsFloat(0);
 		}
 	}
 }
