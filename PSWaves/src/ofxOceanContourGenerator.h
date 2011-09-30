@@ -50,4 +50,5 @@ class ofxOceanContourGenerator {
 	
 	bool onA;
 	float switchTime;
+
 };
