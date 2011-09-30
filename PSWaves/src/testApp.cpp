@@ -57,6 +57,11 @@ void testApp::setup(){
 	currentScreen = NULL;
 
 	loadScreens();
+
+	flashTime = 0;
+	lastSwitchedTime = 0;
+	autoMode = false;
+	hideEverything = false;
 }
 
 void testApp::createMoods(){
@@ -74,7 +79,7 @@ void testApp::createMoods(){
 	 m->velocityA = ofVec2f(1.0, 0);
 	 m->velocityB = ofVec2f(.5, 0);
 	 m->targetDensity = 300;
-	 m->baseColor = ofFloatColor(1.0,1.0,1.0);
+	 m->baseColor = ofFloatColor(.6,.6,.6);
 	 m->accentColor = ofFloatColor(1.0, .35, 0);
 	 moods.push_back( m );
 
@@ -120,10 +125,46 @@ void testApp::createMoods(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+
+	if(autoMode){
+		if( (ofGetElapsedTimef() - lastSwitchedTime) > 3*60){
+			int newMood = ofRandom(1, moods.size());
+			if(newMood < moods.size()){
+				contours->currentMood = moods[newMood];
+			}
+
+			float newCamera = ofRandom(5.0f);
+			if(newCamera < 1){
+				cam.cameraPositionFile = "camera1.xml";
+				cam.loadCameraPosition();
+			}
+			else if(newCamera < 2){
+				cam.cameraPositionFile = "camera2.xml";
+				cam.loadCameraPosition();
+			}
+			else if(newCamera < 3){
+				cam.cameraPositionFile = "camera3.xml";
+				cam.loadCameraPosition();
+			}
+			else if(newCamera < 4){
+				cam.cameraPositionFile = "camera4.xml";
+				cam.loadCameraPosition();
+			}
+			else {
+				cam.cameraPositionFile = "camera5.xml";
+				cam.loadCameraPosition();
+			}
+			lastSwitchedTime = ofGetElapsedTimef();
+		}
+	}
+
     ocean->waveScale += (targetHeight - ocean->waveScale)*.01;
     ocean->choppyScale += (targetChoppy - ocean->choppyScale)*.01;
-   ocean->waveSpeed = 8;
+
 	contours->fftScale = fftScale;
+
+    ocean->waveSpeed = targetSpeed;
+
 
 	ocean->setFrameNum(ofGetFrameNum());
     ocean->update();
@@ -140,8 +181,12 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
 
+	if(hideEverything) return;
+
 	fbo.begin();
-	ofClear(0, 0, 0, 255);
+
+	int flashColor = ofMap(ofGetElapsedTimef(), flashTime, flashTime+.35, 255, 0, true);
+	ofClear(flashColor, flashColor, flashColor, 255);
 
 	cam.begin(ofRectangle(0, 0, fbo.getWidth(), fbo.getHeight()));
 	ofSetColor(255, 255, 255, 255);
@@ -413,14 +458,44 @@ void testApp::handleOSC(){
 			targetChoppy = m.getArgAsFloat(0);
 		}
 
+		if(m.getAddress() == "/wavespeed"){
+			targetSpeed = m.getArgAsFloat(0);
+		}
+
 		if(m.getAddress() == "/fftscale"){
 			fftScale = m.getArgAsFloat(0);
+		}
+
+		if(m.getAddress() == "/hide"){
+			hideEverything = true;
+		}
+
+		if(m.getAddress() == "/reveal"){
+			hideEverything = false;
+		}
+
+		if(m.getAddress() == "/autoon"){
+			lastSwitchedTime = ofGetElapsedTimef();
+			autoMode = true;
+		}
+
+		if(m.getAddress() == "/autooff"){
+			autoMode = false;
+		}
+
+		if(m.getAddress() == "/flash"){
+			flashTime = ofGetElapsedTimef();
 		}
 	}
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
+
+	if(key == 'b'){
+		flashTime = ofGetElapsedTimef();
+	}
+
 	if(key == 'v'){
 		scaleToView = !scaleToView;
 		if(scaleToView){

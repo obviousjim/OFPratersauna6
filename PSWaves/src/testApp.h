@@ -37,6 +37,7 @@ class testApp : public ofBaseApp{
 	ofxOceanContourGenerator* contours;
 	float targetChoppy;
 	float targetHeight;
+	float targetSpeed;
 	
 	ofxOscReceiver oscreceiver;
 	
@@ -76,6 +77,10 @@ class testApp : public ofBaseApp{
 	int selectedFencepostIndex;
 	float fencepostSelectOffset;
 	
+	float flashTime;
+	float lastSwitchedTime;
+	bool autoMode;
+	bool hideEverything;
 	
 	void gaussian_elimination(float *input, int n);
 	void findHomography(ofVec2f src[4], ofVec2f dst[4], float homography[16]);
